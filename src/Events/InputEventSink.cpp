@@ -52,7 +52,6 @@ namespace Events {
             }
         }
 
-        auto acu = Utils::ActorUtils::ActorCheckUtils::GetSingleton();
         if (doToggle) {
             Hook::CharacterHook::EnableHook();
         }

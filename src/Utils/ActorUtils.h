@@ -30,12 +30,11 @@ namespace Utils::ActorUtils {
             return &singleton;
         }
 
-        std::unordered_map<RE::FormID, ActorData> _actorFrozenMap;
         bool IsEquippedHeels(RE::Actor* actor);
         bool IsOStimActors(RE::Actor* actor);
         bool IsHeels(RE::FormID formid);
         bool ShouldFreeze(RE::FormID id);
-        std::unordered_map<RE::FormID, Utils::ActorUtils::ActorData> GetOStimActorsFormID() const { return _actorFrozenMap;};
+        std::unordered_map<RE::FormID, Utils::ActorUtils::ActorData> GetOStimActorsFormID() const;
         void SetHeelsForActor(RE::Actor* actor, bool equiped);
         void UnregisterOStimActor(RE::Actor* actor);
         void RegisterOStimActors(RE::Actor* actor);
@@ -43,6 +42,7 @@ namespace Utils::ActorUtils {
         RE::Actor* GetActorFromNode(RE::NiAVObject* a_node);
     private:
         mutable std::shared_mutex _actor_mutex;
+        std::unordered_map<RE::FormID, ActorData> _actorFrozenMap;
     };
     
 }  // namespace Utils

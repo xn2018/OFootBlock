@@ -93,19 +93,17 @@ namespace Hook {
         // Call original UpdateAnimation first - this updates all bone animations
         _UpdateDownwardPass(a_this, a_data, a_arg2);
         // 如果未启用，直接调用原函数
-        if (!g_Enable.load(std::memory_order_acquire)) {
-            return;
-        }
+        if (g_Enable.load(std::memory_order_acquire)) {
+            if (!g_OStim.load(std::memory_order_acquire)) {
+                return;
+            }
 
-        if (!g_OStim.load(std::memory_order_acquire)) {
-            return;
-        }
-
-        auto boneCache = Utils::BoneUtils::BoneCache::GetSingleton();
-        if (boneCache->IsTarget(a_this)) {
-            // 直接从管理器获取之前捕捉的变换数据并应用
-            auto btfm = Utils::BoneUtils::BoneTransformManager::GetSingleton();
-            btfm->RestoreNPCFootBones(a_this);
+            auto boneCache = Utils::BoneUtils::BoneCache::GetSingleton();
+            if (boneCache->IsTarget(a_this)) {
+                // 直接从管理器获取之前捕捉的变换数据并应用
+                auto btfm = Utils::BoneUtils::BoneTransformManager::GetSingleton();
+                btfm->RestoreNPCFootBones(a_this);
+            }
         }
     }
 
