@@ -29,12 +29,11 @@ namespace Utils::ActorUtils {
                 }
             }
         }
+
         return hasHeels;
     }
 
     bool ActorCheckUtils::IsHeels(RE::FormID formid) {
-
-
         // FormID → TESForm
         auto form = RE::TESForm::LookupByID(formid);
         if (!form) {
@@ -50,7 +49,6 @@ namespace Utils::ActorUtils {
         // 判断是否占用脚部槽位（鞋子）
         return armor->HasPartOf(RE::BIPED_MODEL::BipedObjectSlot::kFeet);
     }
-
 
     void ActorCheckUtils::RegisterOStimActors(RE::Actor* actor) {
         if (!actor) {
@@ -81,7 +79,6 @@ namespace Utils::ActorUtils {
     }
 
     void ActorCheckUtils::SetHeelsForActor(RE::Actor* actor, bool equiped) {
-
         if (!actor) {
             return;
         }
@@ -94,8 +91,6 @@ namespace Utils::ActorUtils {
         // - 如果存在 → 返回引用
 
         data.hasHeels = equiped;
-
-        logger::info("SetHeelsForActor: {} -> hasHeels = {}", actor->GetName(), equiped ? "true" : "false");
     }
 
     bool ActorCheckUtils::ShouldFreeze(RE::FormID id) {
@@ -131,19 +126,16 @@ namespace Utils::ActorUtils {
         auto form = RE::TESForm::LookupByID(formId);
 
         if (!form) {
-            logger::warn("SetActorVisiabled: Form not found {:X}", formId);
             return;
         }
 
         auto actor = form->As<RE::Actor>();
         if (!actor) {
-            logger::warn("SetActorVisiabled: Form is not Actor {:X}", formId);
             return;
         }
 
         // 确保3D已加载
         if (!actor->Is3DLoaded()) {
-            logger::warn("SetActorVisiabled: Actor 3D not loaded {:X}", formId);
             return;
         }
 
@@ -174,10 +166,11 @@ namespace Utils::ActorUtils {
                 auto ref = skyrim_cast<RE::TESObjectREFR*>(userData);
                 if (ref && ref->formType == RE::FormType::ActorCharacter) {
                     return skyrim_cast<RE::Actor*>(ref);
+                }
+                current = current->parent;
+                limit++;
             }
-            current = current->parent;
-            limit++;
+            return nullptr;
         }
-        return nullptr;
     }
-}
+}  // namespace Utils::ActorUtils
