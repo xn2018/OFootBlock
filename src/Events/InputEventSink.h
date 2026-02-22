@@ -5,11 +5,11 @@
 #include <unordered_set>
 #include <vector>
 
-#include "Hook.h"  // 你的 Hooks::SetFreezeActor 声明
+#include "Hook.h"
 #include "Events/InputChordDetector.h"
 #include "RE/Skyrim.h"
 #include "SKSE/SKSE.h"
-#include "Utils/BoneUtils.h"  // 你需要实现的骨骼工具
+#include "Utils/BoneUtils.h"
 
 namespace Events {
     class InputEventSink : public RE::BSTEventSink<RE::InputEvent*> {

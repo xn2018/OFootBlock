@@ -3,9 +3,6 @@
 #include "Utils/ActorUtils.h"
 #include "Utils/BoneUtils.h"
 
-// 如果你有中心控制类，可以 include 它
-// #include "OFootBlockManager.h"
-
 #include <string_view>
 
 namespace Events {
@@ -64,7 +61,7 @@ namespace Events {
 
         pos += key.size();
 
-        // 找到 Actors 字段结束
+        // End after finding the Actors field.
         auto end = payload.find('|', pos);
         std::string_view actorsView = (end == std::string::npos) ? std::string_view(payload).substr(pos)
                                                                  : std::string_view(payload).substr(pos, end - pos);
@@ -85,7 +82,7 @@ namespace Events {
             std::string_view idView =
                 (comma == std::string::npos) ? actorsView.substr(start) : actorsView.substr(start, comma - start);
 
-            // 去掉 "N:" / "P:"
+            // Remove "N:" / "P:"
             if (idView.size() > 2 && idView[1] == ':') {
                 idView.remove_prefix(2);
             }
@@ -100,13 +97,13 @@ namespace Events {
 
                     if (actor) {
                         if (threadStart) {
-                            // ⭐ 场景开始
+                            // ⭐ Scene Start
                             btfm->CaptureFootBones(actor);
                             acu->RegisterOStimActors(actor);
                             Hook::CharacterHook::SetOStimState(threadStart);
                             logger::info("[OFootBlock] Scene start register actor {}", actor->GetName());
                         } else {
-                            // ⭐ 场景结束
+                            // ⭐ Scene End
                             btfm->RestoreFootBones(actor);
                             acu->UnregisterOStimActor(actor);
                             Hook::CharacterHook::SetOStimState(threadStart);
@@ -126,7 +123,7 @@ namespace Events {
             start = comma + 1;
         }
 
-        // ⭐ 如果是线程结束，可选择清空缓存
+        // ⭐ If the thread has ended, you can choose to clear the cache.
         if (!threadStart) {
             btfm->Clear();
         }

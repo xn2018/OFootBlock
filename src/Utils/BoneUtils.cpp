@@ -7,7 +7,7 @@ using namespace SKSE::log;
 
 namespace Utils::BoneUtils {
     // ------------------------------------------------------------
-    // 捕捉初始骨骼变换（位置、旋转、缩放）以便后续使用
+    // Capture initial bone transformations (position, rotation, scaling) for later use.
     // ------------------------------------------------------------
     void BoneTransformManager::CaptureFootBones(RE::Actor* actor) {
         if (!actor) {
@@ -22,7 +22,7 @@ namespace Utils::BoneUtils {
         }
 
         m_footBoneTransforms.clear();
-
+        
         for (const auto& boneName : m_footBoneNames) {
             auto bone = root->GetObjectByName(boneName);
             if (bone) {
@@ -45,7 +45,7 @@ namespace Utils::BoneUtils {
     }
 
     // ------------------------------------------------------------
-    // 冻结核心：使用之前捕捉的骨骼变换（位置、旋转、缩放）
+    // Freeze Core: Use previously captured bone transformations (position, rotation, scaling)
     // ------------------------------------------------------------
     void BoneTransformManager::RestoreFootBones(RE::Actor* actor) {
         if (!actor->Get3D()) {
@@ -95,6 +95,7 @@ namespace Utils::BoneUtils {
         boneCache->SetReady();
     }
 
+
     void BoneTransformManager::RestoreNPCFootBones(RE::NiAVObject* a_Node) {
         for (const auto& [boneName, transform] : m_footBoneTransforms) {
             if (boneName == a_Node->name.c_str()) {
@@ -124,7 +125,7 @@ namespace Utils::BoneUtils {
     }
 
     bool BoneCache::IsTarget(RE::NiAVObject* a_node) {
-        // 如果开关没开，直接返回
+        // If the switch is not turned on, return directly.
         if (!g_isCached.load(std::memory_order_relaxed)) {
             return false;
         }

@@ -40,14 +40,14 @@ namespace Hook {
         // Call original UpdateAnimation first - this updates all bone animations
         _UpdateAnimation(a_this, a_delta);
 
-        // 如果未启用，直接调用原函数
+        // If plugin not enabled, skip additional processing
         if (g_Enable.load(std::memory_order_acquire)) {
-            // 防御：空指针（理论上不会，但Hook里要谨慎）
+            // Defensive: null pointer check (shouldn't normally happen, but be careful in hooks)
             if (!a_this) {
                 return;
             }
 
-            // 判断是否为OStim场景角色
+            // Check whether this is an OStim scene actor
             auto actorManager = Utils::ActorUtils::ActorCheckUtils::GetSingleton();
             if (!actorManager->ShouldFreeze(a_this->formID)) {
                 return;
@@ -62,8 +62,12 @@ namespace Hook {
         }
     }
 
+    // NPC animation update logic differs from player animation. I tried using Character::UpdateAnimation,
+    // but its call frequency was too low to cover skeletal animations. Therefore,
+    // I switched to a combination of Character::Update and NiNode::UpdateDownwardPass. Character::Update is used to
+    // mark pre-frozen bones, and NiNode::UpdateDownwardPass completes the final animation overlay.
     void CharacterHook::CharacterUpdate(RE::Actor* a_this, float a_delta) {
-        // Call original UpdateAnimation first - this updates all bone animations
+        // Call original Update first - this updates all bone animations
         _CharacterUpdate(a_this, a_delta);
         auto boneCache = Utils::BoneUtils::BoneCache::GetSingleton();
         if (boneCache->HasCached()) {
@@ -74,25 +78,21 @@ namespace Hook {
             return;
         }
 
-        // 判断是否为OStim场景角色
+        // Check whether this is an OStim scene actor
         auto actorManager = Utils::ActorUtils::ActorCheckUtils::GetSingleton();
         if (!actorManager->ShouldFreeze(a_this->formID)) {
             return;
         }
 
-        // Note: We restore bones AFTER Update but update is called before UpdateAnimation
-        // So we'll handle restoration in UpdateAnimation instead
         auto btfm = Utils::BoneUtils::BoneTransformManager::GetSingleton();
         if (btfm->HasCapturedBones()) {
             btfm->MarkFootBones(a_this);
         }
     }
 
-    // Hook Character::Update - called every frame to update animations
+    // Hook NiNode::UpdateDownwardPass - called every frame to update animations
     void CharacterHook::UpdateDownwardPass(NiNode* a_this, RE::NiUpdateData& a_data, std::uint32_t a_arg2) {
-        // Call original UpdateAnimation first - this updates all bone animations
         _UpdateDownwardPass(a_this, a_data, a_arg2);
-        // 如果未启用，直接调用原函数
         if (g_Enable.load(std::memory_order_acquire)) {
             if (!g_OStim.load(std::memory_order_acquire)) {
                 return;
@@ -100,14 +100,13 @@ namespace Hook {
 
             auto boneCache = Utils::BoneUtils::BoneCache::GetSingleton();
             if (boneCache->IsTarget(a_this)) {
-                // 直接从管理器获取之前捕捉的变换数据并应用
                 auto btfm = Utils::BoneUtils::BoneTransformManager::GetSingleton();
                 btfm->RestoreNPCFootBones(a_this);
             }
         }
     }
 
-    // ===== 安装 Hook =====
+    // ===== Install Hooks =====
     void CharacterHook::Install() {
         // auto& trampoline = SKSE::GetTrampoline();
         

@@ -13,7 +13,7 @@ namespace Events {
 
         UpdateKeyState(id, btn, now);
 
-        // 组合键检测：key1 按住 + key2 刚 Down
+        // Key combination detection: Press and hold key1 + press and hold key2 (down)
         if (id == key2 && btn->IsDown()) {
             if (state1.isDown && !state2.consumed) {
                 state2.consumed = true;
@@ -21,7 +21,7 @@ namespace Events {
             }
         }
 
-        // 反向组合
+        // Reverse Combination
         if (id == key1 && btn->IsDown()) {
             if (state2.isDown && !state1.consumed) {
                 state1.consumed = true;

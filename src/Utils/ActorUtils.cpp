@@ -1,5 +1,6 @@
-#include "RE/N/NiTransform.h"
 #include "Utils/ActorUtils.h"
+
+#include "RE/N/NiTransform.h"
 #include "Utils/BoneUtils.h"
 
 using namespace SKSE;
@@ -40,13 +41,13 @@ namespace Utils::ActorUtils {
             return false;
         }
 
-        // 必须是护甲（Armor）
+        // Must be armor (TESObjectARMO)
         auto armor = form->As<RE::TESObjectARMO>();
         if (!armor) {
             return false;
         }
 
-        // 判断是否占用脚部槽位（鞋子）
+        // Check whether it occupies the feet slot (shoes)
         return armor->HasPartOf(RE::BIPED_MODEL::BipedObjectSlot::kFeet);
     }
 
@@ -86,9 +87,9 @@ namespace Utils::ActorUtils {
         const RE::FormID formID = actor->GetFormID();
 
         auto& data = _actorFrozenMap[formID];
-        // operator[] 会：
-        // - 如果不存在 → 自动创建默认 ActorData
-        // - 如果存在 → 返回引用
+        // operator[] will:
+        // - If not present -> automatically create a default ActorData
+        // - If present -> return a reference
 
         data.hasHeels = equiped;
     }
@@ -122,55 +123,30 @@ namespace Utils::ActorUtils {
         return _actorFrozenMap;
     }
 
-    void ActorCheckUtils::SetActorVisiabled(RE::FormID formId, bool _frozen) {
-        auto form = RE::TESForm::LookupByID(formId);
-
-        if (!form) {
-            return;
-        }
-
-        auto actor = form->As<RE::Actor>();
-        if (!actor) {
-            return;
-        }
-
-        // 确保3D已加载
-        if (!actor->Is3DLoaded()) {
-            return;
-        }
-
-        if (!_frozen) {
-            // 隐藏 Actor（完全透明）
-            actor->SetAlpha(0.0f);
-        } else {
-            actor->SetAlpha(1.0f);
-        }
-
-        logger::info("Actor hidden {:X}", formId);
-    }
-
     RE::Actor* ActorCheckUtils::GetActorFromNode(RE::NiAVObject* a_node) {
         if (!a_node) return nullptr;
 
-        // 向上遍历层级，但限制层数防止死循环或过度消耗
+        // Traverse up the hierarchy, but limit the number of steps to avoid infinite loops or excessive work
         int limit = 0;
         RE::NiAVObject* current = a_node;
 
         while (current && limit < 20) {
-            // 关键防御 1：检查指针地址是否看起来合法（简单过滤空指针和极小地址）
+            // Defensive check 1: verify pointer address looks valid (simple filter for null/very small addresses)
             if (reinterpret_cast<uintptr_t>(current) < 0x10000) break;
 
-            // 关键防御 2：检查 userData
+            // Defensive check 2: check userData
             auto userData = current->GetUserData();
             if (userData) {
                 auto ref = skyrim_cast<RE::TESObjectREFR*>(userData);
                 if (ref && ref->formType == RE::FormType::ActorCharacter) {
                     return skyrim_cast<RE::Actor*>(ref);
                 }
-                current = current->parent;
-                limit++;
             }
-            return nullptr;
+
+            current = current->parent;
+            limit++;
         }
+
+        return nullptr;
     }
 }  // namespace Utils::ActorUtils

@@ -12,7 +12,7 @@ namespace Events {
 
     struct InputKeyState {
         bool isDown{false};
-        bool consumed{false};  // 防止 repeat
+        bool consumed{false};  // Prevent repeat
         std::chrono::steady_clock::time_point downTime{};
     };
 

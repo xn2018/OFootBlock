@@ -8,7 +8,6 @@ namespace Events {
     public:
         static OFootBlockEventListener* GetSingleton();
 
-        // 在 SKSE kDataLoaded 时调用
         void Register();
         void Unregister();
 

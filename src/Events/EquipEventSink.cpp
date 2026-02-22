@@ -36,11 +36,11 @@ namespace Events {
 
         auto acu = Utils::ActorUtils::ActorCheckUtils::GetSingleton();
 
-        // 只处理 OStim 场景角色
+        // Only handle OStim scene characters
         if (!acu->IsOStimActors(actor)) return RE::BSEventNotifyControl::kContinue;
 
         // -------------------------------------
-        // 🎯 关键：判断事件物品是否为高跟鞋
+        // 🎯 Important: Determine if the item in the event is a high heel.
         // -------------------------------------
         auto obj = ev->baseObject;
         if (!obj) return RE::BSEventNotifyControl::kContinue;
@@ -49,7 +49,7 @@ namespace Events {
             return RE::BSEventNotifyControl::kContinue;
 
         // -------------------------------------
-        // 现在可以安全判断 equip / unequip
+        // It is now safe to make a judgment. equip / unequip
         // -------------------------------------
         acu->SetHeelsForActor(actor, ev->equipped);
         logger::info("Actor {} unequipped heels", actor->GetName());

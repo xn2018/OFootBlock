@@ -38,7 +38,7 @@ namespace Utils::ActorUtils {
         void SetHeelsForActor(RE::Actor* actor, bool equiped);
         void UnregisterOStimActor(RE::Actor* actor);
         void RegisterOStimActors(RE::Actor* actor);
-        void SetActorVisiabled(RE::FormID formId, bool doToggle);
+
         RE::Actor* GetActorFromNode(RE::NiAVObject* a_node);
     private:
         mutable std::shared_mutex _actor_mutex;
